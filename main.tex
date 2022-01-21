@@ -119,7 +119,8 @@
       \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-pel-shader.png}
       \caption{PELs}
     \end{subfigure}%
-    \caption{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    \caption{\textbf{Short Summary Part}\\
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
     consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
@@ -138,14 +139,119 @@
 \section{Related Work}
 
 \section{Mathematical Preliminaries}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\linewidth,trim={15px 15 15 50},clip]{images/sphere-wireframe.png}
+    \caption{Triangulated Meshes}
+  \end{figure}
 
 \section{Photic Extremum Lines}
 
 \section{Algorithm}
 
+  \begin{figure}
+    \centering
+    \includegraphics[width=\linewidth,trim={15px 15 15 50},clip]{images/subpolygon-lines.png}
+    \caption{Sub-Polygon Feature Lines}
+  \end{figure}
+
 \section{Implementation}
 
 \section{Results and Comparison}
+
+  \begin{figure*}
+      \centering
+      \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-viewer-shader.png}
+        \caption{Illumination}
+      \end{subfigure}%
+      \hfill%
+      \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-contours.png}
+        \caption{Contours}
+      \end{subfigure}%
+      \hfill%
+      \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-contour-pel-shader.png}
+        \caption{Contours and PELs}
+      \end{subfigure}%
+      \hfill
+      \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-contour-pel-toon-shader.png}
+        \caption{Contours, PELs, and Toon}
+      \end{subfigure}%
+      \caption{\textbf{Short Summary Part}\\
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+    \end{figure*}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
+      \caption{Low}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
+      \caption{Mid}
+    \end{subfigure}
+    \caption{Effect of thresholding}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-hidden-shader.png}
+      \caption{Off}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-shader.png}
+      \caption{On}
+    \end{subfigure}
+    \caption{Two-Pass Rendering for Hidden Line Removal}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-front.png}
+      \caption{Front}
+    \end{subfigure}
+    \begin{subfigure}[b]{\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-side.png}
+      \caption{Side}
+    \end{subfigure}
+    \caption{Nearly Perfect Line Extraction for Smooth Objects}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-contour-pel-shader.png}
+      \caption{Contours and PELs}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-light-variation.png}
+      \caption{Variation}
+    \end{subfigure}
+    \caption{Erroneous Line Extraction for Noisy Objects}
+  \end{figure}
 
 \section{Conclusions}
 
