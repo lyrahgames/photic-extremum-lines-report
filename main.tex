@@ -28,11 +28,21 @@
 \titleformat{\section}{\normalfont\bfseries}{\thesection}{1em}{}
 
 \title{%
-  Illustrative Visualization: Photic Extremum Lines
+  Photic Extremum Lines
 }
 %\subtitle{Seminar Report}
 \author{Markus Pawellek}
 \date{\today}
+
+\hypersetup{
+  pdftex,
+  % pdfauthor={Your Name},
+  % pdftitle={The Title},
+  % pdfsubject={\@title},
+  pdfkeywords={Non-Photorealistic Rendering; Feature Lines; View-Dependent Object-Space Algorithm; Contours; Silhouettes; Suggestive Contours; Photic Extremum Lines; Illumination; Interactive},
+  % pdfproducer={Latex with hyperref},
+  % pdfcreator={pdflatex, or other tool}
+}
 
 \bibliography{references}
 
@@ -77,7 +87,8 @@
     \\
 
     \noindent
-    Keywords: OpenGL, Feature Lines, Contours, Silhouettes
+    \textbf{Keywords:}
+    \parbox[t]{0.8\textwidth}{Non-Photorealistic Rendering, Feature Lines, View-Dependent Object-Space Algorithm, Contours, Silhouettes, Suggestive Contours, Photic Extremum Lines, Illumination, Interactive}
   \end{abstract}
   \hrule
   \vspace{3em}
@@ -139,6 +150,7 @@
 \section{Conclusions}
 
 \nocite{*}
+\AtNextBibliography{\footnotesize}
 \printbibliography[heading=bibintoc]
 
 \appendix
