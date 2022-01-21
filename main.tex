@@ -1,25 +1,25 @@
 \documentclass[9pt,fleqn,twoside,twocolumn]{stdglobal}
 
-\fancypagestyle{sectionstyle}{
+\fancypagestyle{titlepagestyle}{
   \fancyhf{}
   \fancyhead[L]{\footnotesize\itshape Seminar (Illustrative Visualization) 2021/2022}
   % \fancyfoot[C]{\footnotesize\bigskip\thepage/\pageref{LastPage}}
   % \fancyfoot{}
   \fancyfoot[C]{\footnotesize\bigskip\thepage}
-  \fancyfoot[R]{\footnotesize\bigskip\copyright\ Markus Pawellek, \today}
+  \fancyfoot[RO]{\footnotesize\bigskip\copyright\ Markus Pawellek, \today}
   \renewcommand{\footrulewidth}{0.5pt}
   \renewcommand{\headrulewidth}{0pt}
 }
 
-\fancypagestyle{mainstyle}{
+\fancypagestyle{mystyle}{
   \fancyhf{}
   \fancyfoot[C]{\footnotesize\bigskip\thepage}
-  \fancyfoot[R]{\footnotesize\bigskip\copyright\ Markus Pawellek, \today}
+  \fancyfoot[RO]{\footnotesize\bigskip\copyright\ Markus Pawellek, \today}
   % \fancyhead[LO,RE]{\footnotesize \thetitle} %left
   % \fancyhead[RO,LE]{\footnotesize \theauthor} %right
   % \fancyhead[LO,RE]{\footnotesize \ \smallskip}
-  \fancyhead[RO]{\footnotesize \@title \smallskip} %right
-  \fancyhead[LE]{\footnotesize \@title \smallskip} %right
+  \fancyhead[LE]{\footnotesize\itshape Photic Extremum Lines \smallskip} %right
+  \fancyhead[RO]{\footnotesize\itshape Seminar (Illustrative Visualization) 2021/2022\smallskip } %right
   \renewcommand{\headrulewidth}{0.5pt}
   \renewcommand{\footrulewidth}{0.5pt}
 }
@@ -27,10 +27,7 @@
 \usepackage{titlesec}
 \titleformat{\section}{\normalfont\bfseries}{\thesection}{1em}{}
 
-\title{%
-  Photic Extremum Lines
-}
-%\subtitle{Seminar Report}
+\title{Photic Extremum Lines}
 \author{Markus Pawellek}
 \date{\today}
 
@@ -46,10 +43,13 @@
 
 \bibliography{references}
 
+\pagestyle{mystyle}
+
 \begin{document}
 
 \selectlanguage{english}
-\thispagestyle{sectionstyle}
+
+\thispagestyle{titlepagestyle}
 
 \twocolumn[{\begin{@twocolumnfalse}%
   \begin{center}
@@ -139,6 +139,12 @@
 \section{Related Work}
 
 \section{Mathematical Preliminaries}
+  \begin{definition}[Mesh Function]
+    \[
+      \function{f}{S}{\setReal}
+    \]
+  \end{definition}
+
   \begin{figure}
     \centering
     \includegraphics[width=0.6\linewidth,trim={15px 15 15 50},clip]{images/sphere-wireframe.png}
@@ -148,6 +154,28 @@
 \section{Photic Extremum Lines}
 
 \section{Algorithm}
+
+  \begin{tcolorbox}[%
+    colframe=black,
+    colbacktitle=white,
+    coltitle=black,
+    colback=mathdefback,
+    attach boxed title to top center={yshift=-2mm},
+    enhanced,
+    titlerule=0.1pt,
+    boxrule=0.5pt,
+    arc=5pt,
+    breakable,
+    width=\linewidth,
+    title=Algorithm
+  ]
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  \end{tcolorbox}
 
   \begin{figure}
     \centering
