@@ -36,7 +36,7 @@
   % pdfauthor={Your Name},
   % pdftitle={The Title},
   % pdfsubject={\@title},
-  pdfkeywords={Non-Photorealistic Rendering; Feature Lines; View-Dependent Object-Space Algorithm; Contours; Silhouettes; Suggestive Contours; Photic Extremum Lines; Illumination; Interactive},
+  pdfkeywords={Non-Photorealistic Rendering; Feature Lines; View-Dependent Object-Space Algorithm; Contours; Silhouettes; Suggestive Contours; Photic Extremum Lines; Illumination},
   % pdfproducer={Latex with hyperref},
   % pdfcreator={pdflatex, or other tool}
 }
@@ -88,7 +88,7 @@
 
     \noindent
     \textbf{Keywords:}
-    \parbox[t]{0.8\textwidth}{Non-Photorealistic Rendering, Feature Lines, View-Dependent Object-Space Algorithm, Contours, Silhouettes, Suggestive Contours, Photic Extremum Lines, Illumination, Interactive}
+    \parbox[t]{0.8\textwidth}{Non-Photorealistic Rendering, Feature Lines, View-Dependent Object-Space Algorithm, Contours, Silhouettes, Suggestive Contours, Photic Extremum Lines, Illumination}
   \end{abstract}
   \hrule
   \vspace{3em}
@@ -134,21 +134,27 @@
   In this respect, photorealistic rendering techniques are suboptimal because they are not able to efficiently depict features of interest.
   Our knowledge of human cognition shows that, artistic drawings or paintings, in comparison to a photograph of the same scene, seem to be more suitable for communication and more pleasing in visual experience \autocite{xie2007}.
   Therefore non-photorealistic rendering techniques, typically inspired by artistic styles, are used to create such illustrations.
+  \autocite{viola2005}%
+  \footnote{In this report, citations concerning more than one sentence are given at the end of the respective paragraph.}
 
-  Feature lines represent a given data set as a line drawing.
+  Feature lines represent a given data set as a line drawing to mimic hand-drawn illustrations.
   In such a way, a large amount of information can be communicated in a succinct manner by taking advantage of human visual acuity.
-  Used as a tool in illustrative visualization, feature lines convey the shape of objects much more efficiently compared to a photograph.
+  Used as an abstraction tool in illustrative visualization, feature lines convey the shape of objects much more efficiently compared to a photograph.
+  \autocite{xie2007,isenberg2003,viola2005}
 
-  There are many different types of commonly-used feature lines, such as contours \autocite{isenberg2003}, suggestive contours \autocite{decarlo2003}, or ridge-valley lines.
-  Typically, these are only dependent on the view position and the surface geometry.
+  There are many different types of commonly-used feature lines, such as contours \autocite{isenberg2003}, suggestive contours \autocite{decarlo2003}, ridge-valley lines \autocite{ohtake2004}, apparent ridges \autocite{judd2007}, and demarcating curves \autocite{kolomenkin2008}.
+  Typically, these only depend on the surface geometry, such as normal and curvature, and possibly the view position.
   However, human perception is highly sensitive to high variations in illumination.
   As a consequence, for conveying the shape of objects according to human perception, feature lines should also depend on the lighting of an object.
+  \autocite{xie2007,zhang2011}
 
-  In this report, we present the concept and implementation of photic extremum lines (PELs), one of the first type of feature lines exhibiting a dependency on illumination
+  In this report, we present the concept and implementation of photic extremum lines (PELs), one of the first types of feature lines exhibiting a dependency on illumination.
   PELs have been first introduced in \textcite{xie2007} and further developed in \textcite{zhang2010}.
-  Strongly inspired by the edge detection techniques for 2D images, they characterize a sudden change of illumination on 3D shapes.
-  Since their computation is taken out in object space, this makes them flexible and enables further post-processing such as line stylization and toon shading \autocite{isenberg2003}.
+  Strongly inspired by the edge detection techniques for 2D images, they are characterized by a sudden change of illumination on the surface of a 3D object.
+  Since their computation is taken out in object space, PELs are flexible and enable further post-processing such as line stylization and shading \autocite{isenberg2003}.
   Furthermore, by manipulating the illumination of an object, the user can take full control to adjust the rendering output and achieve desired illustration results.
+  Implementations for PELs can be done for the CPU and GPU, nowadays, achieving real-time performance.
+  \autocite{xie2007,zhang2010}
 
 \section{Related Work}
   The main references of this report are
