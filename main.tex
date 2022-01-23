@@ -78,8 +78,8 @@
   \begin{abstract}
     \itshape
     \noindent
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    In the field of illustrative visualization, feature lines are essential for conveying the shape of a given object.
+    Photic extremum lines (PELs) are a type of feature line which are, besides normal and view position, dependent on the illumination.
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
     consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
@@ -129,19 +129,80 @@
   \end{figure*}
 
 \section{Introduction}
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  Illustrative visualization is the science and art of effectively communicating known aspects of scientific data in an accurate and intuitive way.
+  Especially for the rendering of volumetric datasets in medicine, it is a valuable tool to reduce a vast amount of complex information to its essence given a focus and a context.
+  % Especially for the rendering of volumetric datasets in medicine, scanned artifacts in archaeology, or technical construction designs in engineering and manufacturing, it is a valuable tool to reduce a rich set of complex information to its essence regarding focus and context for better understanding.
+  % Evolving out of scientific illustration, it is a subfield of scientific visualization.
+  It is well-known that photorealism is not really able to provide an efficient depiction of features of interest.
+  Our knowledge of human cognition shows that, artistic drawings or paintings seem to be more suitable for communication and more pleasing in visual experience in comparison to a photograph of the same scene.
+  Therefore non-photorealistic rendering (NPR) techniques, typically inspired by artistic styles, are used to create such illustrations.
+  NPR is able to show features that may not be seen by using a global illumination algorithm.
+  % But in contrast to visual art, scientific visualization needs depicting features of abstract data in an expressive way, while simultaneously providing insight into the underlying data.
+
+  One of the most important tools used in illustrative visualization for conveying the shape of an object are feature lines.
+  By taking advantage of human visual acuity, line drawings can express a large amount of information which makes them more expressive than photographs.
+  There are many different types of commonly-used feature lines, such as contours (silhouettes), suggestive contours, or ridge-valley lines.
+  Typically, they are only dependent on the surface geometry, such as normal and curvature, and/or the view position.
+  However, human perception is highly sensitive to high luminance variations.
+  As a consequence, conveying the shape of objects by using feature lines should also depend on the illumination of an object.
+
+  In this report we present photic extremum lines (PELs) created by.
+  Strongly inspired by the edge detection techniques for 2D images, PELs characterize a sudden change of illumination on 3D shapes in object space.
+  This enables further processing such as line stylization.
+
+  Additionally, we will talk about an implementation.
 
 \section{Related Work}
+  The main references of this report are
 
 \section{Mathematical Preliminaries}
   \begin{definition}[Mesh Function]
     \[
       \function{f}{S}{\setReal}
+    \]
+  \end{definition}
+
+  \begin{definition}[(First Fundamental Form Triangle)]
+    \[
+      \mathrm{I}_{uv} \define
+      \begin{pmatrix}
+        \norm{u}^2 & \scalarProduct{u}{v} \\
+        \scalarProduct{u}{v} & \norm{v}^2
+      \end{pmatrix}
+    \]
+    \[
+      \mathrm{I}^{-1}_{uv} = \frac{\adj \mathrm{I}_{uv}}{\det \mathrm{I}_{uv}} =
+      \frac{1}{\norm{u}^2\norm{v}^2 - \absolute{\scalarProduct{u}{v}}}
+      \begin{pmatrix}
+        \norm{v}^2 & -\scalarProduct{u}{v} \\
+        -\scalarProduct{u}{v} & \norm{u}^2
+      \end{pmatrix}
+    \]
+  \end{definition}
+
+  \begin{definition}[(Gradient Triangle)]
+    \[
+      [\nabla f]_{uv} = \mathrm{I}^{-1}_{uv}
+      \begin{pmatrix}
+        \Delta_u f \\
+        \Delta_v f
+      \end{pmatrix}
+    \]
+    \[
+      \nabla f =
+      \begin{pmatrix}
+        u & v
+      \end{pmatrix}
+      [\nabla f]_{uv}
+    \]
+  \end{definition}
+
+  \begin{definition}
+    \[
+      \partial_w f(x) \define \scalarProduct{\nabla f(x)}{w}
+    \]
+    \[
+      \mathscr{D}_f g(x) \define \scalarProduct{\nabla g(x)}{\frac{\nabla f(x)}{\norm{\nabla f(x)}}}
     \]
   \end{definition}
 
@@ -152,6 +213,16 @@
   \end{figure}
 
 \section{Photic Extremum Lines}
+  \begin{definition}[(Photic Extremum Lines)]
+    Let $S$ be a smooth surface patch and $\function{φ}{S}{\setReal}$ three-times continuously differentiable scalar illumination function.
+    The set of photic extremums over $S$ with respect to $φ$ consists of all points $x\in S$ where the variation of illumination in the direction of its gradient reaches a local maximum.
+    In other words, such that the following holds.
+    \[
+      \mathscr{D}_φ\norm{\nabla φ}(x) = 0
+      \separate
+      \mathscr{D}^2_φ\norm{\nabla φ}(x) < 0
+    \]
+  \end{definition}
 
 \section{Algorithm}
 
