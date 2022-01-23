@@ -94,40 +94,6 @@
   \vspace{3em}
 \end{@twocolumnfalse}}]
 
-\begin{figure*}
-    \centering
-    \begin{subfigure}[b]{0.24\textwidth}
-      \centering
-      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-vertex-lighting.png}
-      \caption{Illumination}
-    \end{subfigure}%
-    \hfill%
-    \begin{subfigure}[b]{0.24\textwidth}
-      \centering
-      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-light-variation.png}
-      \caption{Variation}
-    \end{subfigure}%
-    \hfill%
-    \begin{subfigure}[b]{0.24\textwidth}
-      \centering
-      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-light-variation-slope.png}
-      \caption{Variation Slope}
-    \end{subfigure}%
-    \hfill
-    \begin{subfigure}[b]{0.24\textwidth}
-      \centering
-      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-pel-shader.png}
-      \caption{PELs}
-    \end{subfigure}%
-    \caption{\textbf{Short Summary Part}\\
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
-  \end{figure*}
-
 \section{Introduction}
   Illustrative visualization is the science and art of effectively communicating known aspects of scientific data in an accurate and intuitive way.
   Especially for the rendering of volumetric data sets in medicine, it is a valuable tool to reduce a vast amount of complex information to its essence.
@@ -157,7 +123,25 @@
   \autocite{xie2007,zhang2010}
 
 \section{Related Work}
-  The main references of this report are
+  For the comprehension and implementation of PELs, we also need to rely on several basic techniques and definitions.
+  In \textcite{isenberg2003}, we get a thorough classification of feature line types together with recommendations according to the requirements of an application.
+  It also describes the general routine for feature line extraction by using subpolygon interpolation which is also used in \textcite{zhang2010} to render PELs.
+  Furthermore, a basic but general approach for the hidden line removal for object-space algorithms by using a two-pass rendering with depth buffer testing is provided.
+  And additionally, using the above techniques the algorithm for extracting the contours of an object is explained.
+  \autocite{isenberg2003}
+
+  The definition of PELs involves up to third-order derivatives of scalar illumination functions given on a triangle mesh.
+  Algorithms to correctly estimate curvatures and such derivatives are given in \textcite{rusinkiewicz2004}.
+  The main content of this report is based on \textcite{xie2007} which defines PELs and provides a first algorithm and a whole framework to properly generate them.
+  Supposable, the algorithm was implemented using the CPU.
+  In \textcite{zhang2010}, an improved real-time implementation for PELs on the GPU using the standard graphics pipeline for gradient computations is described.
+  Hereby, the authors have used a simpler threshold test and a transformed equation to estimate derivatives for vertices.
+
+  % At this time not used.
+  % Use it in conclusions.
+  % \autocite{kindlmann2003}
+  % \autocite{rusinkiewicz2006}
+  % \autocite{kolomenkin2008}
 
 \section{Mathematical Preliminaries}
   \begin{definition}[Mesh Function]
@@ -217,6 +201,41 @@
   \end{figure}
 
 \section{Photic Extremum Lines}
+
+  \begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.24\textwidth}
+      \centering
+      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-vertex-lighting.png}
+      \caption{Illumination}
+    \end{subfigure}%
+    \hfill%
+    \begin{subfigure}[b]{0.24\textwidth}
+      \centering
+      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-light-variation.png}
+      \caption{Variation}
+    \end{subfigure}%
+    \hfill%
+    \begin{subfigure}[b]{0.24\textwidth}
+      \centering
+      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-light-variation-slope.png}
+      \caption{Variation Slope}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[b]{0.24\textwidth}
+      \centering
+      \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-pel-shader.png}
+      \caption{PELs}
+    \end{subfigure}%
+    \caption{\textbf{Short Summary Part}\\
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+  \end{figure*}
+
   \begin{definition}[(Photic Extremum Lines)]
     Let $S$ be a smooth surface patch and $\function{φ}{S}{\setReal}$ three-times continuously differentiable scalar illumination function.
     The set of photic extremums over $S$ with respect to $φ$ consists of all points $x\in S$ where the variation of illumination in the direction of its gradient reaches a local maximum.
