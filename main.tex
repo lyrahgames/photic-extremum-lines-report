@@ -130,25 +130,23 @@
 
 \section{Introduction}
   Illustrative visualization is the science and art of effectively communicating known aspects of scientific data in an accurate and intuitive way.
-  Especially for the rendering of volumetric datasets in medicine, it is a valuable tool to reduce a vast amount of complex information to its essence given a focus and a context.
-  % Especially for the rendering of volumetric datasets in medicine, scanned artifacts in archaeology, or technical construction designs in engineering and manufacturing, it is a valuable tool to reduce a rich set of complex information to its essence regarding focus and context for better understanding.
-  % Evolving out of scientific illustration, it is a subfield of scientific visualization.
-  It is well-known that photorealism is not really able to provide an efficient depiction of features of interest.
-  Our knowledge of human cognition shows that, artistic drawings or paintings seem to be more suitable for communication and more pleasing in visual experience in comparison to a photograph of the same scene.
-  Therefore non-photorealistic rendering (NPR) techniques, typically inspired by artistic styles, are used to create such illustrations.
-  NPR is able to show features that may not be seen by using a global illumination algorithm.
-  % But in contrast to visual art, scientific visualization needs depicting features of abstract data in an expressive way, while simultaneously providing insight into the underlying data.
+  Especially for the rendering of volumetric data sets in medicine, it is a valuable tool to reduce a vast amount of complex information to its essence.
+  In this respect, photorealistic rendering techniques are suboptimal because they are not able to efficiently depict features of interest.
+  Our knowledge of human cognition shows that, artistic drawings or paintings, in comparison to a photograph of the same scene, seem to be more suitable for communication and more pleasing in visual experience \autocite{xie2007}.
+  Therefore non-photorealistic rendering techniques, typically inspired by artistic styles, are used to create such illustrations.
 
-  One of the most important tools used in illustrative visualization for conveying the shape of an object are feature lines.
-  By taking advantage of human visual acuity, line drawings can express a large amount of information which makes them more expressive than photographs.
-  There are many different types of commonly-used feature lines, such as contours (silhouettes), suggestive contours, or ridge-valley lines.
-  Typically, they are only dependent on the surface geometry, such as normal and curvature, and/or the view position.
-  However, human perception is highly sensitive to high luminance variations.
-  As a consequence, conveying the shape of objects by using feature lines should also depend on the illumination of an object.
+  Feature lines represent a given data set as a line drawing.
+  In such a way, a large amount of information can be communicated in a succinct manner by taking advantage of human visual acuity.
+  Used as a tool in illustrative visualization, feature lines can convey the shape of objects much more efficiently compared to a photograph.
 
-  In this report we present photic extremum lines (PELs) created by.
+  There are many different types of commonly-used feature lines, such as contours \autocite{isenberg2003}, suggestive contours \autocite{decarlo2003}, or ridge-valley lines.
+  Typically, these are only dependent on the view position and the surface geometry.
+  However, human perception is highly sensitive to high variations in illumination.
+  As a consequence, for conveying the shape of objects according to human perception, feature lines should also depend on the lighting of an object.
+
+  In this report, we present photic extremum lines (PELs) first introduced in \textcite{xie2007}.
   Strongly inspired by the edge detection techniques for 2D images, PELs characterize a sudden change of illumination on 3D shapes in object space.
-  This enables further processing such as line stylization.
+  This makes them flexible and enables further processing such as line stylization.
 
   Additionally, we will talk about an implementation.
 
