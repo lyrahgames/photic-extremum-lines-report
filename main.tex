@@ -401,18 +401,40 @@
   \end{figure}
 
 \section{Conclusions}
-  PELs are view- and light-dependent feature lines in object space.
-  They are characterized by points where the variation of illumination is larger than a given threshold and reaches a local maximum in the direction of its gradient.
-  To compute PELs, we therefore have to evaluate up to third-order derivatives of a given illumination function every animation frame.
+  We have introduced the concept of PELs --- a view- and light-dependent feature line type in object space.
+  PELs are the set of points on an illuminated surface where the variation of illumination is larger than a given threshold and where it reaches a local maximum in the direction of its gradient.
+  This definition stems from the generalization of edge detection techniques for two-dimensional images to three-dimensional shapes.
+  Hereby, our knowledge of human perception has been applied to provide an object-space algorithm that is able to generate more natural renderings of lines.
+  We were able to see that PELs strongly coincide with hand-drawn illustrations.
+  By definition, PELs are therefore more general than other feature line types.
+  Changing the lighting model allows to remove unwanted details or amplify parts which would otherwise be unseen.
+  Furthermore, applying further techniques, such as contours and toon shading, greatly improves the resulting illustration.
+
+  To extract PELs from a given scene, we have to evaluate up to third-order derivatives of a given scalar illumination function for each animation frame.
   This makes PELs computationally much more expensive than other feature line types.
-  However, real-time capability can be achieved by GPU implementations.
-  And with the provided CPU implementation, we are still able to achieve interactive frame rates.
-  Using different lighting techniques, PEL generation can be adjusted and shows similarities to hand-drawn illustrations.
-  PEL in conjunction with additional shading techniques, such as contours and toon shading, even more improves the rendered output.
+  However, using today's CPUs and GPUs, real-time capability can be achieved even by naive implementations.
+  Apart from that, all typical feature line algorithms for hidden line removal or line extraction can be used.
 
-  Comparison to other algorithms.
+  We have implemented PELs in C++ with an OpenGL pipeline, using a hybrid approach utilizing CPU and GPU at the same time for simplicity.
+  The shown implementation achieves interactive up to real-time frame rates even for millions of triangles.
+  Due to synchronization issues, computations of gradients and directional derivatives are done on the CPU in a straightforward serial algorithm.
+  The rendering step is done in a two-pass approach to remove hidden lines.
+  For the line extraction, we have used a geometry shader written in GLSL that outputs subpolygon feature line segments in a triangle.
+  Fragments that do not meet the threshold are discarded by the fragment shader.
 
-  For the future, exaggerated shading and automatic thresholding and normal filtering should be used.
+  An important preprocessing step for some models should be the denoising of vertex normals by applying a bilateral normal filter.
+  Without appropriate smoothing, a lot of non-intuitive artifact lines originate in the illustration.
+  However, typical normal filtering uses parameters that are tweaked by the user to achieve superior results.
+  Such adjustments quickly become infeasible for larger more complex scenes.
+  Therefore future research and implementations should also strive for automatic normal filtering techniques without the need of user intervention as it was already shown to work in \textcite{zhang2011} for Laplacian lines.
+  In the same category falls the automatic determination of thresholds to remove unwanted lines in a model.
+
+  Regarding our implementation, future versions should strive for a full GPU implementation according to \textcite{zhang2010}.
+  But instead of textures, a more modern approach based on compute shaders that take advantage of shader storage buffers to access information of neighboring vertices could be used.
+  A pure GPU implementation is likely to be faster and also more flexible and easier to integrate with other techniques.
+
+  Trying to improve the quality of generated illustrations, \citeauthor{zhang2010} used mean-curvature lighting \autocite{kindlmann2003,kolomenkin2008} instead of a simplified Phong model to make line extraction more robust.
+  According to this, also other lighting techniques, such as exaggerated shading \autocite{rusinkiewicz2006}, seem to be promising alternatives for a robust automatic lighting model.
 
 \nocite{*}
 \AtNextBibliography{\footnotesize}
