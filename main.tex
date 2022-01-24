@@ -261,7 +261,7 @@
 
 \section{Photic Extremum Lines}
 
-  \begin{figure*}
+  \begin{figure*}[h]
     \centering
     \begin{subfigure}[b]{0.24\textwidth}
       \centering
@@ -278,37 +278,73 @@
     \begin{subfigure}[b]{0.24\textwidth}
       \centering
       \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-light-variation-slope.png}
-      \caption{Variation Slope $\mathscr{D}_φ\norm{\nabla φ}$}
+      \caption{$\mathscr{D}_φ\norm{\nabla φ}$}
     \end{subfigure}%
     \hfill
     \begin{subfigure}[b]{0.24\textwidth}
       \centering
       \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-pel-shader.png}
-      \caption{PELs}
+      \caption{$\mathrm{PEL}_τ(S,φ)$}
     \end{subfigure}%
     \caption{%
-      \textbf{Variation}\\
-      These images show the same shaded object (dragon head) to visually explain the definition of PELs.
+      \textbf{Visualization of PEL Definition}\\
+      These images show the same object with surface $S$.
+      For each image, the object is shaded with a specific function or set of the PEL definition.
+      Hereby, (c) uses orange for positive, blue for negative, and black for zero values.
+      The images shall give an intuition on why the definition of PELs makes sense.
     }
     \label{fig:pel-definition-visualization}
   \end{figure*}
 
-  For this section, let $S$ be a smooth surface patch and $\function{φ}{S}{\setReal}$ three-times continuously differentiable scalar illumination function.
-
-  In other words, photic extrema are points where the variation of illumination in the direction of its gradient reaches a local maximum.
+  Providing the mathematical details, now, we are in a position to give a formal definition of PELs.
+  For this section, let $S$ again be a smooth surface patch and $\function{φ}{S}{\setReal}$ a three-times continuously differentiable scalar function that describes the illumination of the surface $S$ in grayscale values.
 
   \begin{definition*}[(Photic Extremum Lines)]
-    The set $\mathrm{PEL}(S,φ)$ of photic extremum lines consists of all points $x\in S$ such that the following holds.
+    The set $\mathrm{PEL}(S,φ)$ of photic extremum lines consists of all points $x\in S$ such that
     \[
       \mathscr{D}_φ\norm{\nabla φ}(x) = 0
       \separate
       \mathscr{D}^2_φ\norm{\nabla φ}(x) < 0
+      \ .
     \]
-    Let $τ\in\setReal^+_0$ be an arbitrary threshold.
+    Such points are also called photic extrema.
+
+    \smallskip
+    Let $τ\in\setReal^+_0$ be an arbitrary threshold and $\mathscr{F}_τ(S,φ)$ a filter in the following sense.
     \[
-      \mathrm{PEL}_τ(S,φ) \define \set{x\in \mathrm{PEL}(S,φ)}{\norm{\nabla φ}(x) > τ}
+      \mathscr{F}_τ(S,φ) \define \set{x\in S}{\norm{\nabla φ}(x) > τ}
+    \]
+    Then the set of τ-filtered photic extremum lines is defined as follows.
+    \[
+      \mathrm{PEL}_τ(S,φ) \define \mathrm{PEL}(S,φ)\cap\mathscr{F}_τ(S,φ)
     \]
   \end{definition*}
+
+  \noindent
+  In other words, photic extrema are points $x\in S$ where the variation of illumination $\norm{\nabla φ}$ in the direction $\nabla φ$ of its gradient reaches a local maximum.
+  The definition involves the previously defined PEL operator to provide sufficient conditions for these specific local maxima.
+  Figure \ref{fig:pel-definition-visualization} visualizes the different functions used in the above definition.
+
+  Our definition strongly complies with the original definition given in \textcite{xie2007}.
+  But additionally, we already added the threshold to point-wise filter out parts of lines that are too weak in the sense of light variation.
+  This was mainly done to be mathematically rigorous in further discussions but also allows for more generalized filter techniques.
+  The filtering is defined according to \textcite{zhang2010} to be able to achieve real-time performance.
+  The original threshold filter method used in \textcite{xie2007} is based on a line tracing approach of \textcite{ohtake2004} and, as a consequence, is much more involved than the point-wise approach and would most likely lead to a bottleneck in the following algorithm.
+
+  Due to the deliberately built-in dependence on illumination in the definition of PELs, we at last need to clarify which lighting model to choose.
+  As touched in the introduction, in general, arbitrary illumination functions are allowed.
+  The main problem is that not all known lighting models will result in near-natural line drawings.
+  The comparison of different models would fill an article for itself and therefore is not in the scope of this report.
+  For our purposes and according to \textcite{xie2007}, we will choose a simplified Phong model without ambient or specular lighting.
+  In this way, only diffuse lighting, that depends on the cosine of the angle between the lighting direction and the normal of the surface, is allowed.
+  Ambient lighting can be ignored as its directional derivatives would be zero.
+  Since specular lighting effects only arise in small areas and greatly increase illumination, they would most likely introduce unnatural and artificial lines.
+
+  Regarding the count and positioning of light sources, we again want to reduce the set of possibilities to make their specification feasible for this report.
+  Therefore, only one light source will be used.
+  Using this source with movements independent from the camera, PELs would not exhibit the wanted view dependency that other feature line types provide.
+  Hence, we will position a directional light at the camera position such that light direction and view direction coincide.
+  Due to the higher flexibility of PELs, only these restrictions make the results comparable to other feature lines not offering any kind of light dependence.
 
 \section{Algorithm}
   \subsection{Overview}
@@ -362,6 +398,8 @@
 \section{Implementation}
 
 \section{Results and Comparison}
+
+  lighting models and optimal lighting
 
   \begin{figure*}
       \centering
