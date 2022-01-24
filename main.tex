@@ -125,6 +125,8 @@
   \autocite{xie2007,zhang2010}
 
 \section{Related Work}
+\label{sec:related-work}
+
   For the comprehension and implementation of PELs, we also need to rely on several basic techniques and definitions.
   In \textcite{isenberg2003}, we get a thorough classification of feature line types together with recommendations according to the requirements of an application.
   It also describes the general routine for feature line extraction by using subpolygon interpolation which is also used in \textcite{zhang2010} to render PELs.
@@ -347,7 +349,21 @@
   Due to the higher flexibility of PELs, only these restrictions make the results comparable to other feature lines not offering any kind of light dependence.
 
 \section{Algorithm}
+  The formal definition of PELs when put together with the basic techniques of \textcite{isenberg2003} and \textcite{rusinkiewicz2004} described in section \ref{sec:related-work} already supplies us with an intuitive approach to generate PELs.
+  In the following, we will give the details.
+  This time, let $\mathscr{M}=(V,E,F)$ be a regular triangle mesh consisting of vertices $V$, edges $E$, and faces $F$ that approximates a smooth two-dimensional surface.
+  Furthermore, let $\function{n}{V}{\mathscr{S}^2}$ be the function that provides consistent and normalized normals for each vertex of $\mathscr{M}$.
+  Let $S\define V\cup E\cup F$ be the surface of $\mathscr{M}$ and $\function{φ}{S}{\setReal}$ a scalar triangle mesh function representing the grayscale illumination of $\mathscr{M}$ with given values at each vertex which uses linear interpolation based on barycentric coordinates for edges and faces.
+
   \subsection{Overview}
+    The whole PEL algorithm has to be executed each time the view position or lighting changes.
+    This is in contrast to other feature lines that may precompute most of their needed information which are only based on surface geometry.
+
+    Concerning time and effort, the main part of the algorithm needs to compute all the illumination derivatives $\nabla φ$, $\mathscr{D}_φ\norm{\nabla φ}$, and $\mathscr{D}^2_φ\norm{\nabla φ}$ for each vertex $v\in V$.
+    Afterwards, an iteration over all edges $[v,w]\in E$ detects photic extrema on edges.
+    Finally, an iteration over all faces $f\in F$ connects two feature line vertices of adjacent edges if present generating feature line segments.
+    At last, the occlusion, threshold $τ\in\setReal_0^+$, and the value of $\norm{\nabla φ}$ for each point decide if the respective photic extremum represented by a fragment will be rendered.
+
     \begin{tcolorbox}[%
       colframe=black,
       colbacktitle=white,
@@ -360,20 +376,29 @@
       arc=5pt,
       breakable,
       width=\linewidth,
-      title=Algorithm
+      title=Algorithm Overview
     ]
       \begin{enumerate}
-        \item Compute illumination
-        \item Compute variation
-        \item Compute directional derivative
-        \item Compute second-order derivative
-        \item Detect line vertices on edges by testing for photic extremum
-        \item Trace and filter out lines by using threshold
-        \item Render only visible lines by using hidden line removal
+        \item Compute $φ$ at each vertex
+        \item Compute $\norm{\nabla φ}$ and $\frac{\nabla φ}{\norm{\nabla φ}}$ at each vertex
+        \item Compute $\mathscr{D}_φ\norm{\nabla φ}$ at each vertex
+        \item Compute $\mathscr{D}^2_φ\norm{\nabla φ}$ at each vertex
+        \item Detect photic extrema on edges
+        \item Emit feature line segment for each triangle with photic extrema on adjacent edges
+        \item Discard fragments of feature lines \\ based on threshold
+        \item Render non-occluded feature line \\ fragments by using hidden line removal
       \end{enumerate}
     \end{tcolorbox}
 
+    \noindent
+    In our implementation, points 1 to 4 are taken out on the CPU.
+    Point 5 and 6 have been merged and put inside a geometry shader of the graphics pipeline.
+    This makes it possible to implement the threshold-based discarding of PEL fragments inside a fragment shader by a simple branch comparing the illumination variation of the fragment to the given threshold.
+
   \subsection{Preprocessing}
+    Besides loading the triangle mesh to be rendered with PELs, generating interpolated normals for every vertex have to be computed if they are not already present.
+    Here, we refer to standard procedures given by \textcite{max1999} and \textcite{jin2005}.
+    Further preprocessing would involve reducing the noise of such normals by using bilateral normal filter.
 
     \begin{figure}[h]
       \centering
@@ -406,9 +431,6 @@
     \end{figure}
 
 
-    Besides loading the triangle mesh to be rendered with PELs, generating interpolated normals for every vertex have to be computed if they are not already present.
-    Here, we refer to standard procedures given by \textcite{max1999} and \textcite{jin2005}.
-    Further preprocessing would involve reducing the noise of such normals by using bilateral normal filter.
 
     For the computation of gradients and directional derivatives on the mesh, local coordinate system and Voronoi weights should be precomputed.
     Additionally, neighboring vertices should be stored for parallelization.
@@ -417,6 +439,28 @@
     For each face, compute the constant gradient by using formula in background.
     Transform and rotate this gradient into the local vertex system and accumulate multiplied with Voronoi weight.
     Afterwards iterate over all vertices for normalization.
+
+    \begin{tcolorbox}[%
+      colframe=black,
+      colbacktitle=white,
+      coltitle=black,
+      colback=mathdefback,
+      attach boxed title to top center={yshift=-2mm},
+      enhanced,
+      titlerule=0.1pt,
+      boxrule=0.5pt,
+      arc=5pt,
+      breakable,
+      width=\linewidth,
+      title=Gradient Algorithm
+    ]
+      \begin{enumerate}
+        \item For each face, compute gradient in $uv$-coordinate representation
+        \item For each adjacent vertex, transform representation into local $uv$-coordinates
+        \item for directional derivatives, compute them at vertices
+        \item Accumulate this representation by using Voronoi weights
+      \end{enumerate}
+    \end{tcolorbox}
 
   \subsection{Line Tracing}
 
@@ -441,7 +485,47 @@
       \caption{Effect of thresholding}
     \end{figure}
 
+
+    \begin{tcolorbox}[%
+      colframe=black,
+      colbacktitle=white,
+      coltitle=black,
+      colback=mathdefback,
+      attach boxed title to top center={yshift=-2mm},
+      enhanced,
+      titlerule=0.1pt,
+      boxrule=0.5pt,
+      arc=5pt,
+      breakable,
+      width=\linewidth,
+      title=Line Extraction
+    ]
+      \[
+        h(x)\define\mathscr{D}_φ\norm{\nabla φ}(x)
+      \]
+      \begin{enumerate}
+        \item For each edge $[v,w]\subset S$, check zero-crossings
+        \[
+          h(v)h(w) < 0
+        \]
+        \item Approximate zero-crossing
+        \[
+          p \define \frac{\absolute{h(w)}v + \absolute{h(v)}w}{\absolute{h(v)} + \absolute{h(w)}}
+        \]
+        \item Check maximum condition
+        \[
+          \mathscr{D}_φ^2\norm{\nabla φ}(p) < 0
+        \]
+        \item For each triangle, connect valid zero-crossings of adjacent edges to line segments
+      \end{enumerate}
+    \end{tcolorbox}
+
   \subsection{Hidden Line Removal}
+    For themselves, feature line algorithms that work in object space in the first instance cannot decide which lines are occluded by the object's geometry since they have no concept of depth.
+    Not removing occluded lines results in images like the one given in figure \ref{fig:hidden-line-removal}.
+    There, we also see the correct variant where only non-occluded lines are shown.
+    According to \textcite{isenberg2003}, this problem is typically referenced as \textit{hidden line removal} and can be dealt with by using several different techniques.
+
     \begin{figure}[h]
       \centering
       \begin{subfigure}[b]{0.49\linewidth}
@@ -462,11 +546,6 @@
       }
       \label{fig:hidden-line-removal}
     \end{figure}
-
-    For themselves, feature line algorithms that work in object space in the first instance cannot decide which lines are occluded by the object's geometry since they have no concept of depth.
-    Not removing occluded lines results in images like the one given in figure \ref{fig:hidden-line-removal}.
-    There, we also see the correct variant where only non-occluded lines are shown.
-    According to \textcite{isenberg2003}, this problem is typically referenced as \textit{hidden line removal} and can be dealt with by using several different techniques.
 
     Probably the simplest method involves using the depth buffer together with depth testing of the standard graphics pipeline.
     Hereby, the object will first be rendered as a whole but possibly uncolored surface.
