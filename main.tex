@@ -396,9 +396,13 @@
     This makes it possible to implement the threshold-based discarding of PEL fragments inside a fragment shader by a simple branch comparing the illumination variation of the fragment to the given threshold.
 
   \subsection{Preprocessing}
-    Besides loading the triangle mesh to be rendered with PELs, generating interpolated normals for every vertex have to be computed if they are not already present.
-    Here, we refer to standard procedures given by \textcite{max1999} and \textcite{jin2005}.
-    Further preprocessing would involve reducing the noise of such normals by using bilateral normal filter.
+    Besides loading the triangle mesh to be rendered with PELs, we have to generate the interpolated normals for every vertex if they are not already present.
+    For this, we refer to the standard procedures given by \textcite{max1999} and \textcite{jin2005}.
+    This may already be sufficient for triangle meshes that were created manually by graphic designers.
+    Usually, such models provide us with very smooth surface normals.
+    An example can be seen in figure \ref{fig:preprocessing-normals-smooth}.
+    The car has been manually modeled and provides very smooth normals.
+    And as a result, it shows a  near-perfect feature line extraction.
 
     \begin{figure}[h]
       \centering
@@ -412,8 +416,19 @@
         \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-side.png}
         \caption{Side}
       \end{subfigure}
-      \caption{Nearly Perfect Line Extraction for Smooth Objects}
+      \caption{%
+        \textbf{Nearly Perfect PEL Extraction for Smooth Normals}\\
+        The images show different perspectives of the extracted PELs for the Lamborghini model that provides very smooth surface normals.
+        It can be seen that the smoothness allows for a nearly perfect line extraction without artifacts.
+      }
+      \label{fig:preprocessing-normals-smooth}
     \end{figure}
+
+    For triangle meshes originated from 3D scanners on the other hand, generated normals may be inaccurate due to errors in measurement or round-off errors.
+    Such inconsistencies are typically called noise and would probably result in artifacts when rendering feature lines because derivative computations have a major dependency on surface normals.
+    The effects can be seen in figure \ref{fig:preprocessing-normals-noise}.
+    As a consequence, further preprocessing would involve reducing the noise of such normals by using bilateral normal filtering for example as it was done in \textcite{xie2007}.
+    Here, we will not provide any details concerning this topic because such filters need parameters that may be tweaked by the user.
 
     \begin{figure}[h]
       \centering
@@ -427,13 +442,24 @@
         \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-light-variation.png}
         \caption{Variation}
       \end{subfigure}
-      \caption{Erroneous Line Extraction for Noisy Objects}
+      \caption{%
+        \textbf{Erroneous PEL Extraction for Noisy Normals}\\
+        The images show extracted PELs and light variation of the head model.
+        This model provides very noisy surface normals which manifest in PEL artifacts around the chin and neck.
+        The light variation visualizes the noise of the surface normals.
+      }
+      \label{fig:preprocessing-normals-noise}
     \end{figure}
 
+    For the computation of gradients and directional derivatives on the triangle mesh, each vertex should be equipped with an orthonormal system of two vectors spanning its tangent space.
+    Generating such tangent vectors can be quite arbitrary.
+    Our approach first uses a uniform distribution on the unit sphere to randomly generate normalized directions for each vertex.
+    In conjunction with the vertex normal, we can then compute these tangent space vectors by two cross products.
 
-
-    For the computation of gradients and directional derivatives on the mesh, local coordinate system and Voronoi weights should be precomputed.
-    Additionally, neighboring vertices should be stored for parallelization.
+    \textcite{rusinkiewicz2004}, \textcite{xie2007}, and \textcite{zhang2010} all refer to \textcite{meyer2001} when it comes to the accumulation step of face gradients at their vertices.
+    Hereby, each gradient or directional derivative is weighted based on the Voronoi area of the point inside the current triangle with respect the whole Voronoi area of the vertex.
+    As a consequence, these Voronoi weights should also be precomputed and stored with respect to their vertices and faces.
+    % Additionally, neighboring vertices should be stored for parallelization.
 
   \subsection{Gradient Computation}
     For each face, compute the constant gradient by using formula in background.
