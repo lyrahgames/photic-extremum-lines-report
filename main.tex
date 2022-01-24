@@ -374,6 +374,38 @@
     \end{tcolorbox}
 
   \subsection{Preprocessing}
+
+    \begin{figure}[h]
+      \centering
+      \begin{subfigure}[b]{\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-front.png}
+        \caption{Front}
+      \end{subfigure}
+      \begin{subfigure}[b]{\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-side.png}
+        \caption{Side}
+      \end{subfigure}
+      \caption{Nearly Perfect Line Extraction for Smooth Objects}
+    \end{figure}
+
+    \begin{figure}[h]
+      \centering
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-contour-pel-shader.png}
+        \caption{Contours and PELs}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-light-variation.png}
+        \caption{Variation}
+      \end{subfigure}
+      \caption{Erroneous Line Extraction for Noisy Objects}
+    \end{figure}
+
+
     Besides loading the triangle mesh to be rendered with PELs, generating interpolated normals for every vertex have to be computed if they are not already present.
     Here, we refer to standard procedures given by \textcite{max1999} and \textcite{jin2005}.
     Further preprocessing would involve reducing the noise of such normals by using bilateral normal filter.
@@ -387,13 +419,63 @@
     Afterwards iterate over all vertices for normalization.
 
   \subsection{Line Tracing}
-  \subsection{Hidden Line Removal}
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=\linewidth,trim={15px 15 15 50},clip]{images/subpolygon-lines.png}
-    \caption{Sub-Polygon Feature Lines}
-  \end{figure}
+    \begin{figure}[h]
+      \centering
+      \includegraphics[width=0.8\linewidth,trim={15px 15 15 50},clip]{images/subpolygon-lines.png}
+      \caption{Sub-Polygon Feature Lines}
+    \end{figure}
+
+    \begin{figure}[h]
+      \centering
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
+        \caption{Low}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
+        \caption{Mid}
+      \end{subfigure}
+      \caption{Effect of thresholding}
+    \end{figure}
+
+  \subsection{Hidden Line Removal}
+    \begin{figure}[h]
+      \centering
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-hidden-shader.png}
+        \caption{Off}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-shader.png}
+        \caption{On}
+      \end{subfigure}
+      \caption{%
+        \textbf{Two-Pass Rendering for Hidden Line Removal}\\
+        These images show the PELs of the same model.
+        For the left image, a two-pass rendering approach to remove by the object's geometry occluded lines has not been used.
+        For the image on the right, first, the whole uncolored surface was rendered to write into the depth buffer and afterwards the feature lines were drawn.
+      }
+      \label{fig:hidden-line-removal}
+    \end{figure}
+
+    For themselves, feature line algorithms that work in object space in the first instance cannot decide which lines are occluded by the object's geometry since they have no concept of depth.
+    Not removing occluded lines results in images like the one given in figure \ref{fig:hidden-line-removal}.
+    There, we also see the correct variant where only non-occluded lines are shown.
+    According to \textcite{isenberg2003}, this problem is typically referenced as \textit{hidden line removal} and can be dealt with by using several different techniques.
+
+    Probably the simplest method involves using the depth buffer together with depth testing of the standard graphics pipeline.
+    Hereby, the object will first be rendered as a whole but possibly uncolored surface.
+    This makes sure that every fragment that can be seen from the camera stores its depth value into the depth buffer.
+    All successive rendering calls will then test the depth values of their fragments against the depth buffer.
+    In a second rendering pass, the extraction of feature lines will generate fragments with respective depth values.
+    The built-in depth test will then discard such fragments that are occluded because their depth values are too high.
+
+    Problems?
 
 \section{Implementation}
 
@@ -401,7 +483,7 @@
 
   lighting models and optimal lighting
 
-  \begin{figure*}
+  \begin{figure*}[h]
       \centering
       \begin{subfigure}[b]{0.24\textwidth}
         \centering
@@ -434,66 +516,6 @@
       cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
       proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
     \end{figure*}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
-      \caption{Low}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
-      \caption{Mid}
-    \end{subfigure}
-    \caption{Effect of thresholding}
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-hidden-shader.png}
-      \caption{Off}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-shader.png}
-      \caption{On}
-    \end{subfigure}
-    \caption{Two-Pass Rendering for Hidden Line Removal}
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-front.png}
-      \caption{Front}
-    \end{subfigure}
-    \begin{subfigure}[b]{\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/lamborghini-side.png}
-      \caption{Side}
-    \end{subfigure}
-    \caption{Nearly Perfect Line Extraction for Smooth Objects}
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-contour-pel-shader.png}
-      \caption{Contours and PELs}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/head-light-variation.png}
-      \caption{Variation}
-    \end{subfigure}
-    \caption{Erroneous Line Extraction for Noisy Objects}
-  \end{figure}
 
 \section{Conclusions}
   We have introduced the concept of PELs --- a view- and light-dependent feature line type in object space.
