@@ -146,61 +146,118 @@
   % \autocite{kolomenkin2008}
 
 \section{Mathematical Preliminaries}
-  \begin{definition}[Mesh Function]
-    \[
-      \function{f}{S}{\setReal}
-    \]
-  \end{definition}
+  To systematically comprehend the definition, design, and implementation of PELs, basic knowledge in differential geometry is administrable.
+  In the following, we will repeat the definitions and formulas for gradients and directional derivatives of functions defined on a two-dimensional surface.
 
-  \begin{definition}[(First Fundamental Form Triangle)]
+  For this section, let $S$ be smooth two-dimensional surface patch and $x\in S$ be an arbitrary point.
+  We assume $u,v\in\mathrm{T}_x(S)\subset\setReal^3$ to be vectors that span the tangent space of $S$ at the point $x$.
+  Furthermore, let $\function{f,g}{S}{\setReal}$ be two continuously differentiable scalar functions on $S$.
+  To be able to express the gradient of such functions, we need the first fundamental form.
+
+  \begin{definition*}[(First Fundamental Form)]
+    The first fundamental form $\mathrm{I}_{uv}(x)$ of $S$ at $x$ in $uv$-coordinate representation is given by
     \[
-      \mathrm{I}_{uv} \define
+      \mathrm{I}_{uv}(x) \define
       \begin{pmatrix}
         \norm{u}^2 & \scalarProduct{u}{v} \\
         \scalarProduct{u}{v} & \norm{v}^2
-      \end{pmatrix}
+      \end{pmatrix} \ .
+    \]
+    As direct result, its inverse can be computed in the following way.
+    \[
+      \mathrm{I}^{-1}_{uv}(x) = \frac{\adj \mathrm{I}_{uv}(x)}{\det \mathrm{I}_{uv}(x)}
     \]
     \[
-      \mathrm{I}^{-1}_{uv} = \frac{\adj \mathrm{I}_{uv}}{\det \mathrm{I}_{uv}} =
-      \frac{1}{\norm{u}^2\norm{v}^2 - \absolute{\scalarProduct{u}{v}}}
+      \adj\mathrm{I}_{uv}(x) =
       \begin{pmatrix}
         \norm{v}^2 & -\scalarProduct{u}{v} \\
         -\scalarProduct{u}{v} & \norm{u}^2
       \end{pmatrix}
     \]
-  \end{definition}
-
-  \begin{definition}[(Gradient Triangle)]
     \[
-      [\nabla f]_{uv} = \mathrm{I}^{-1}_{uv}
-      \begin{pmatrix}
-        \Delta_u f \\
-        \Delta_v f
-      \end{pmatrix}
+      \det\mathrm{I}_{uv}(x) = \norm{u}^2\norm{v}^2 - \absolute{\scalarProduct{u}{v}}^2
     \]
+  \end{definition*}
+
+  \noindent
+  By using $[r]_{uv} = \mathrm{I}_{uv}(x)\, r$, these expressions allow us to freely transform the $uv$-coordinate representation $[r]_{uv}\in\setReal^2$ of tangent space vectors $r\in\mathrm{T}_x(S)$ back and forth to their standard representation.
+
+  \begin{definition*}[(Directional Derivative)]
+    Let $w\in\mathrm{T}_x(S)$ be an arbitrary direction.
+    Then the directional derivative $\partial_w f(x)$ of $f$ at point $x$ in direction $w$ is given as follows.
     \[
-      \nabla f =
+      \partial_w f(x) = \scalarProduct{\nabla f(x)}{w}
+    \]
+  \end{definition*}
+
+  \noindent
+  This definition was provided for the sake of completion.
+  Using the definition of directional derivatives together with the expressions based on the first fundamental form, the computation of the gradient of a given scalar function on the surface is then straightforward.
+
+  \begin{definition*}[(Gradient)]
+    Let $[\nabla f(x)]_{uv}$ be the $uv$-coordinate representation of $\nabla f(x)$.
+    Then the following holds.
+    \begin{align*}
+      [\nabla f(x)]_{uv} &= \mathrm{I}^{-1}_{uv}(x)
+      \begin{pmatrix}
+        \partial_u f(x) \\
+        \partial_v f(x)
+      \end{pmatrix} \\
+      \nabla f(x) &=
       \begin{pmatrix}
         u & v
       \end{pmatrix}
-      [\nabla f]_{uv}
-    \]
-  \end{definition}
+      [\nabla f(x)]_{uv}
+    \end{align*}
+  \end{definition*}
 
-  \begin{definition}
-    \[
-      \partial_w f(x) \define \scalarProduct{\nabla f(x)}{w}
-    \]
+  \noindent
+  The definition of PELs involves a more complicated derivative operator to precisely formulate the requirements for a local maximum in a specific direction.
+
+  \begin{definition*}[(PEL Operator)]
+    The PEL operator defined as follows evaluates the directional derivative of $g$ in the direction of the gradient of $f$.
     \[
       \mathscr{D}_f g(x) \define \scalarProduct{\nabla g(x)}{\frac{\nabla f(x)}{\norm{\nabla f(x)}}}
     \]
-  \end{definition}
+  \end{definition*}
 
-  \begin{figure}
+  \noindent
+  For the above definition, $f$ can be seen as a scalar field which provides a vector field of directions on $S$ with its gradient.
+  The function $g$ is then differentiated at each point in a direction given by this vector field.
+
+  \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\linewidth,trim={15px 15 15 50},clip]{images/sphere-wireframe.png}
-    \caption{Triangulated Meshes}
+    \includegraphics[width=0.6\linewidth]{figures/triangle.pdf}
   \end{figure}
+
+  \noindent
+  \paragraph{Example:}
+  In particular, for the interior of a triangle, characterized by the points $A,B,C\in\setReal^3$, the first fundamental form is constant and we can set $u$ and $v$ as follows to use the above formulas.
+  \[
+    u\define B-A
+    \separate
+    v\define C-A
+  \]
+  To represent the function $f$ in a discretized form for a computer, we will use a triangle mesh and will only provide a value for each vertex.
+  For interior points $x$ of triangles with barycentric coordinates $α,β,γ\in[0,1]$ with $α+β+γ=1$, linear interpolation over the vertex values $f(A)$, $f(B)$, and $f(C)$ is taken out.
+  \[
+    f(x) = α f(A) + β f(B) + γ f(C)
+  \]
+  As a result, the graph of the discretized function of $f$ is a plane for the interior of each triangle.
+  So also its gradient is constant within the interior.
+  Computing directional derivatives for $u$ and $v$ then reduces to the following expressions.
+  \[
+    \partial_u f = f(B)-f(A)
+    \separate
+    \partial_v f = f(C)-f(A)
+  \]
+  Applying these formulas for each triangle and accumulating those values at their vertices will give us an approach to estimate the gradients and directional derivatives on triangle meshes.
+
+  % \begin{figure}
+  %   \centering
+  %   \includegraphics[width=0.6\linewidth,trim={15px 15 15 50},clip]{images/sphere-wireframe.png}
+  %   \caption{Triangulated Meshes}
+  % \end{figure}
 
 \section{Photic Extremum Lines}
 
@@ -240,7 +297,7 @@
 
   In other words, photic extrema are points where the variation of illumination in the direction of its gradient reaches a local maximum.
 
-  \begin{definition}[(Photic Extremum Lines)]
+  \begin{definition*}[(Photic Extremum Lines)]
     The set $\mathrm{PEL}(S,φ)$ of photic extremum lines consists of all points $x\in S$ such that the following holds.
     \[
       \mathscr{D}_φ\norm{\nabla φ}(x) = 0
@@ -251,7 +308,7 @@
     \[
       \mathrm{PEL}_τ(S,φ) \define \set{x\in \mathrm{PEL}(S,φ)}{\norm{\nabla φ}(x) > τ}
     \]
-  \end{definition}
+  \end{definition*}
 
 \section{Algorithm}
   \subsection{Overview}
