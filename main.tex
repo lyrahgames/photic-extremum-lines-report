@@ -603,8 +603,8 @@
 
 % \section{Implementation}
 
-\section{Results}
-  \subsection{Quality}
+\section{Evaluation and Results}
+  Following the definition and implementation of PELs, it is now possible to evaluate their effectiveness with respect to the illustration quality and their performance.
 
     \begin{figure*}
       \centering
@@ -671,9 +671,57 @@
         \textbf{Quality Results}\\
         The images show the carburetor, lu yu, dragon head, werewolf, predator, suzanne, and fox skull models with varying shading models.
         The toon shading on the right is always done in conjunction with contours and PELs.
+        Each model provides a user-define custom threshold to filter out unwanted PELs and to maximize quality.
       }
       \label{fig:quality-results}
     \end{figure*}
+
+
+  \subsection{Quality}
+    To test PELs regarding their quality, we refer to the illustrations in figure \ref{fig:quality-results} where several models have been rendered with different shading techniques to make an evaluation of the effectiveness of PELs easier.
+    We see the standard shading based on the illumination function, the objects rendered with Contours and/or PELs, and additionally applied toon shader to show future application possibilities.
+
+    Contours are very robust when it comes to their extraction.
+    Even for models with a low number of triangles, their generation algorithm creates feature lines which best describe the overall shape of the object with the strongest fore- to background separation without any measurable performance penalty.
+    However, contours suffer from a low amount of details in inner object parts.
+    PELs on the other hand are able to provide rich details in such areas.
+    Compared to hand-drawn illustration, PELs seem to be consistent and natural.
+    The main problem for PELs seems to be to robustly represent the contours of an object because light variation may not be that high at bending surfaces.
+    But it can be seen that combining contours with PELs, in general, we receive superior results concerning the quality of illustrations.
+
+    As an object-space feature line type, PELs enable further post-processing to alter the style of lines or to apply additional shaders, such as toon shading, to the object's surface.
+    Figure \ref{fig:quality-results} applies to the already enabled contours and PELs a simple toon shading approach.
+    Dependent on the application, this may also greatly improve the effectiveness of communicating surface features.
+
+    \begin{figure}[t]
+      \centering
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
+        \caption{Low}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
+        \caption{Mid}
+      \end{subfigure}
+      \caption{%
+        \textbf{PELs for Varying Thresholds}\\
+        The images show the PELs of the fox skull model filtered with different thresholds.
+        For the left image, a threshold near zero has been used.
+        It can be seen that a lot of PELs shown in this image are very short and do not effectively abstract the surface information.
+      }
+      \label{fig:threshold-effect}
+    \end{figure}
+
+    Taking a look at the use of user-defined thresholds for filtering unwanted PELs, figure \ref{fig:threshold-effect} shows an example.
+    A near-zero threshold will likely extract PELs that are very short and do not carry essential information about the surface geometry.
+    This behavior has also been noticed for all models that are shown.
+
+    Regarding the PEL extraction, problems that arise, such as noisy lines, artifacts, or important but missing lines, may be traced back to the used lighting model to generate the illumination function.
+    An illumination that is only based on the scalar product between view direction and surface normal could be too smooth for important large-scale details to be shown.
+    On the other hand, small-scale unwanted noisy details are likely to be captured.
+    To find an optimal lighting approach, we need to do further research.
 
   \subsection{Performance}
 
@@ -709,57 +757,6 @@
         \hline
       \end{tabular}
     \end{table}
-
-  lighting models and optimal lighting
-
-  \begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
-      \caption{Low}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
-      \caption{Mid}
-    \end{subfigure}
-    \caption{Effect of thresholding}
-  \end{figure}
-
-  \begin{figure*}[h]
-      \centering
-      \begin{subfigure}[b]{0.24\textwidth}
-        \centering
-        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-viewer-shader.png}
-        \caption{Illumination}
-      \end{subfigure}%
-      \hfill%
-      \begin{subfigure}[b]{0.24\textwidth}
-        \centering
-        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-contours.png}
-        \caption{Contours}
-      \end{subfigure}%
-      \hfill%
-      \begin{subfigure}[b]{0.24\textwidth}
-        \centering
-        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-contour-pel-shader.png}
-        \caption{Contours and PELs}
-      \end{subfigure}%
-      \hfill
-      \begin{subfigure}[b]{0.24\textwidth}
-        \centering
-        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/dragon-head-contour-pel-toon-shader.png}
-        \caption{Contours, PELs, and Toon}
-      \end{subfigure}%
-      \caption{\textbf{Short Summary Part}\\
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
-    \end{figure*}
 
 \section{Conclusions}
   We have introduced the concept of PELs --- a view- and light-dependent feature line type in object space.
