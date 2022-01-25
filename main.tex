@@ -565,21 +565,6 @@
     So each PEL vertex is at most computed twice but in a highly parallel approach on the GPU.
     This geometry shader implementation strongly aligns to the ideas given in \textcite{zhang2010}.
 
-    \begin{figure}[h]
-      \centering
-      \begin{subfigure}[b]{0.49\linewidth}
-        \centering
-        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
-        \caption{Low}
-      \end{subfigure}
-      \begin{subfigure}[b]{0.49\linewidth}
-        \centering
-        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
-        \caption{Mid}
-      \end{subfigure}
-      \caption{Effect of thresholding}
-    \end{figure}
-
   \subsection{Hidden Line Removal}
     For themselves, feature line algorithms that work in object space in the first instance cannot decide which lines are occluded by the object's geometry since they have no concept of depth.
     Not removing occluded lines results in images like the one given in figure \ref{fig:hidden-line-removal}.
@@ -616,11 +601,98 @@
 
     Problems?
 
-\section{Implementation}
+% \section{Implementation}
 
-\section{Results and Comparison}
+\section{Results}
+  \subsection{Quality}
+
+    \begin{figure*}
+      \centering
+      \begin{subfigure}[t]{0.19\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/carburetor.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/luyu.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/dragon-head.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/werewolf.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/predator.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/suzanne.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/skull.png}
+        \caption{Illumination}
+      \end{subfigure}%
+      \hfill%
+      \begin{subfigure}[t]{0.19\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/carburetor-contours.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/luyu-contours.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/dragon-head-contours.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/werewolf-contours.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/predator-contours.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/suzanne-contours.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/skull-contours.png}
+        \caption{Contours}
+      \end{subfigure}%
+      \hfill%
+      \begin{subfigure}[t]{0.19\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/carburetor-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/luyu-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/dragon-head-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/werewolf-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/predator-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/suzanne-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/skull-pel.png}
+        \caption{PELs}
+      \end{subfigure}%
+      \hfill
+      \begin{subfigure}[t]{0.19\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/carburetor-contours-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/luyu-contours-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/dragon-head-contours-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/werewolf-contours-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/predator-contours-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/suzanne-contours-pel.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/skull-contours-pel.png}
+        \caption{Contours and PELs}
+      \end{subfigure}%
+      \hfill
+      \begin{subfigure}[t]{0.19\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/carburetor-contours-pel-toon.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/luyu-contours-pel-toon.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/dragon-head-contours-pel-toon.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/werewolf-contours-pel-toon.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/predator-contours-pel-toon.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/suzanne-contours-pel-toon.png}
+        \includegraphics[width=0.95\textwidth,trim={15px 15 15 50},clip]{images/results/skull-contours-pel-toon.png}
+        \caption{Toon Shader}
+      \end{subfigure}%
+      \caption{%
+        \textbf{Quality Results}\\
+        The images show the carburetor, lu yu, dragon head, werewolf, predator, suzanne, and fox skull models with varying shading models.
+        The toon shading on the right is always done in conjunction with contours and PELs.
+      }
+      \label{fig:quality-results}
+    \end{figure*}
+
+  \subsection{Performance}
 
   lighting models and optimal lighting
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
+      \caption{Low}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
+      \caption{Mid}
+    \end{subfigure}
+    \caption{Effect of thresholding}
+  \end{figure}
 
   \begin{figure*}[h]
       \centering
