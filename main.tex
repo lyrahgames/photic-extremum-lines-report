@@ -724,6 +724,13 @@
     To find an optimal lighting approach, we need to do further research.
 
   \subsection{Performance}
+    As said in section \ref{sec:algorithm-overview}, PELs have to be regenerated each time the view or lighting changes.
+    Assuming that both are changing all the times, we have carried out some frame time measurements with our own naive implementation.
+    The results can be seen in table \ref{tab:performance-results}.
+    Hereby, we achieve real-time performance for up to hundreds of thousands of triangles.
+    And even for up to two million triangles, the implementation provides us with interactive frame rates.
+    As a remark, we would like to note that, when not trying to constantly animate objects but only rendering those in a viewer tool, changes in illumination and view are mainly triggered by the user and are therefore very rare.
+    In this special case, the amortized frame time again becomes real-time capable.
 
     \begin{table}[h]
       \caption{%
@@ -735,6 +742,7 @@
         \textrm{Intel Core i7-7700K} CPU and an
         \textrm{NVIDIA GeForce GTX 1070} GPU.
       }
+      \label{tab:performance-results}
       \centering
       \footnotesize
       \renewcommand{\arraystretch}{1.2}
@@ -758,7 +766,7 @@
       \end{tabular}
     \end{table}
 
-\section{Conclusions}
+\section{Conclusions and Future Work}
   We have introduced the concept of PELs --- a view- and light-dependent feature line type in object space.
   PELs are the set of points on an illuminated surface where the variation of illumination is larger than a given threshold and where it reaches a local maximum in the direction of its gradient.
   This definition stems from the generalization of edge detection techniques for two-dimensional images to three-dimensional shapes.
