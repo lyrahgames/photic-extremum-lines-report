@@ -493,12 +493,77 @@
     \end{tcolorbox}
 
   \subsection{Line Extraction}
+    In section \ref{sec:algorithm-overview}, an overview of the PEL algorithm was given.
+    Here, the details for an implementation of points 5 and 6 are provided.
+    The subpolygon feature line extraction method is a general method for object-space feature line algorithms described in \textcite{isenberg2003} and \textcite{xie2007}.
+    The following snippet summarizes the main points.
+    Hereby, we define the following short notation.
+    \[
+      h(x)\define\mathscr{D}_φ\norm{\nabla φ}(x)
+    \]
 
-    \begin{figure}[h]
+    \begin{tcolorbox}[%
+      colframe=black,
+      colbacktitle=white,
+      coltitle=black,
+      colback=mathdefback,
+      attach boxed title to top center={yshift=-2mm},
+      enhanced,
+      titlerule=0.1pt,
+      boxrule=0.5pt,
+      arc=5pt,
+      breakable,
+      width=\linewidth,
+      title=PEL Extraction
+    ]
+      \begin{enumerate}
+        \item For each edge $[v,w]\in E$:
+        \begin{enumerate}
+          \item Check for zero-crossing:
+          \[
+            h(v)h(w) < 0
+          \]
+          \item If this is the case, \\ approximate zero-crossing:
+          \[
+            p \define \frac{\absolute{h(w)}v + \absolute{h(v)}w}{\absolute{h(v)} + \absolute{h(w)}}
+          \]
+          \item Check maximum condition:
+          \[
+            \mathscr{D}_φ^2\norm{\nabla φ}(p) < 0
+          \]
+          \item If this is the case, \\ emit PEL vertex $p$
+        \end{enumerate}
+        \item For each triangle:
+        \begin{enumerate}
+          \item Check if two adjacent edges \\ provide PEL vertices $p$ and $q$
+          \item If this is the case, \\ emit PEL segment $[p,q]$
+        \end{enumerate}
+      \end{enumerate}
+    \end{tcolorbox}
+
+    \noindent
+    A close-up view of a result of this algorithm for a given triangle mesh is given in figure \ref{fig:subpolygon-feature-lines}.
+    Here, every triangle whose edges exhibit a PEL vertex show a straight line segment connecting those vertices.
+    Because neighboring triangles will compute the same PEL vertices on identical edges, in the overall result line segments are connected to whole feature lines.
+
+    \begin{figure}[t]
       \centering
       \includegraphics[width=0.8\linewidth,trim={15px 15 15 50},clip]{images/subpolygon-lines.png}
-      \caption{Sub-Polygon Feature Lines}
+      \caption{%
+        \textbf{Sub-Polygon Feature Lines}\\
+        The image shows a close-up view of the mesh grid and PELs of a shaded triangle mesh.
+        Each triangle whose adjacent edges exhibit PEL vertices show a straight line segment.
+        As a result, neighboring triangles will connect line segments to a whole line.
+      }
+      \label{fig:subpolygon-feature-lines}
     \end{figure}
+
+    As already described, the implementation of both points can be done in one single step by using the geometry shader of the graphics pipeline.
+    For that matter, the input consists of triangles.
+    For all edges of the given triangle, we will then do the steps provided in point 1 of the above algorithm.
+    The geometry shader allows us to easily emit and render line segments.
+    So each PEL vertex is at most computed twice but in a highly parallel approach on the GPU.
+    This geometry shader implementation strongly aligns to the ideas given in \textcite{zhang2010}.
 
     \begin{figure}[h]
       \centering
@@ -514,41 +579,6 @@
       \end{subfigure}
       \caption{Effect of thresholding}
     \end{figure}
-
-
-    \begin{tcolorbox}[%
-      colframe=black,
-      colbacktitle=white,
-      coltitle=black,
-      colback=mathdefback,
-      attach boxed title to top center={yshift=-2mm},
-      enhanced,
-      titlerule=0.1pt,
-      boxrule=0.5pt,
-      arc=5pt,
-      breakable,
-      width=\linewidth,
-      title=Line Extraction
-    ]
-      \[
-        h(x)\define\mathscr{D}_φ\norm{\nabla φ}(x)
-      \]
-      \begin{enumerate}
-        \item For each edge $[v,w]\subset S$, check zero-crossings
-        \[
-          h(v)h(w) < 0
-        \]
-        \item Approximate zero-crossing
-        \[
-          p \define \frac{\absolute{h(w)}v + \absolute{h(v)}w}{\absolute{h(v)} + \absolute{h(w)}}
-        \]
-        \item Check maximum condition
-        \[
-          \mathscr{D}_φ^2\norm{\nabla φ}(p) < 0
-        \]
-        \item For each triangle, connect valid zero-crossings of adjacent edges to line segments
-      \end{enumerate}
-    \end{tcolorbox}
 
   \subsection{Hidden Line Removal}
     For themselves, feature line algorithms that work in object space in the first instance cannot decide which lines are occluded by the object's geometry since they have no concept of depth.
