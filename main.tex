@@ -677,6 +677,39 @@
 
   \subsection{Performance}
 
+    \begin{table}[h]
+      \caption{%
+        \textbf{Performance Results}\\
+        For the listed models, this table shows the number of triangles $\triangle$, the frame time $\Delta t$, and the number of frames per second (FPS).
+        The results were obtained by continuously extracting and rendering PELs from those objects.
+        Each PEL extraction is defined as a frame.
+        This benchmark was executed on a workstation with an
+        \textrm{Intel Core i7-7700K} CPU and an
+        \textrm{NVIDIA GeForce GTX 1070} GPU.
+      }
+      \centering
+      \footnotesize
+      \renewcommand{\arraystretch}{1.2}
+      \begin{tabular}{lrrr}
+        \hline
+        \textbf{Model} & $\triangle$ & $\Delta t\ [ms]$ & \textbf{FPS} \\
+        \hline
+        \hline
+        \rowcolor{mathdefback}
+        Carburetor & $751,340$ & $158.00$ & $6.3$ \\
+        Lu Yu & $1,984,640$ & $201.00$ & $5.0$ \\
+        \rowcolor{mathdefback}
+        Dragon Head & $941,892$ & $215.00$ & $4.6$ \\
+        Werewolf & $361,629$ & $60.50$ & $16.5$ \\
+        \rowcolor{mathdefback}
+        Predator & $986,719$ & $235.00$ & $4.2$ \\
+        Suzanne & $15,744$ & $0.77$ & $1305.0$ \\
+        \rowcolor{mathdefback}
+        Fox Skull & $699,976$ & $41.00$ & $24.3$ \\
+        \hline
+      \end{tabular}
+    \end{table}
+
   lighting models and optimal lighting
 
   \begin{figure}[h]
