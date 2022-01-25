@@ -98,12 +98,12 @@
 
 \section{Introduction}
   Illustrative visualization is the science and art of effectively communicating known aspects of scientific data in an accurate and intuitive way.
+  \footnote{In this report, citations concerning more than one sentence are given at the end of the respective paragraph.}
   Especially for the rendering of volumetric data sets in medicine, it is a valuable tool to reduce a vast amount of complex information to its essence.
   In this respect, photorealistic rendering techniques are suboptimal because they are not able to efficiently depict features of interest.
   Our knowledge of human cognition shows that, artistic drawings or paintings, in comparison to a photograph of the same scene, seem to be more suitable for communication and more pleasing in visual experience \autocite{xie2007}.
   Therefore non-photorealistic rendering techniques, typically inspired by artistic styles, are used to create such illustrations.
   \autocite{viola2005}%
-  \footnote{In this report, citations concerning more than one sentence are given at the end of the respective paragraph.}
 
   Feature lines represent a given data set as a line drawing to mimic hand-drawn illustrations.
   In such a way, a large amount of information can be communicated in a succinct manner by taking advantage of human visual acuity.
@@ -124,6 +124,11 @@
   Implementations for PELs can be done for the CPU and GPU, nowadays, achieving real-time performance.
   \autocite{xie2007,zhang2010}
 
+  For this report, we have implemented the PEL extraction algorithm in modern C++ using the OpenGL API.
+  Due to the size of the whole project, we will not provide code snippets in this report.
+  But we encourage the reader to take a look at the source code on GitHub.%
+  \footnote{GitHub Project URL: \\ \url{https://github.com/lyrahgames/photic-extremum-lines}}
+
 \section{Related Work}
 \label{sec:related-work}
 
@@ -136,6 +141,7 @@
 
   The definition of PELs involves up to third-order derivatives of scalar illumination functions given on a triangle mesh.
   Algorithms to correctly estimate curvatures and such derivatives are given in \textcite{rusinkiewicz2004}.
+
   The main content of this report is based on \textcite{xie2007} which defines PELs and provides a first algorithm and a whole framework to properly generate them.
   Supposable, the algorithm was implemented using the CPU.
   In \textcite{zhang2010}, an improved real-time implementation for PELs on the GPU using the standard graphics pipeline for gradient computations is described.
@@ -148,6 +154,7 @@
   % \autocite{kolomenkin2008}
 
 \section{Mathematical Preliminaries}
+\label{sec:mathematical-preliminaries}
   To systematically comprehend the definition, design, and implementation of PELs, basic knowledge in differential geometry is administrable.
   In the following, we will repeat the definitions and formulas for gradients and directional derivatives of functions defined on a two-dimensional surface.
 
@@ -290,7 +297,7 @@
     \end{subfigure}%
     \caption{%
       \textbf{Visualization of PEL Definition}\\
-      These images show the same object with surface $S$.
+      These images show the dragon head model with surface $S$.
       For each image, the object is shaded with a specific function or set of the PEL definition.
       Hereby, (c) uses orange for positive, blue for negative, and black for zero values.
       The images shall give an intuition on why the definition of PELs makes sense.
@@ -359,11 +366,13 @@
   \label{sec:algorithm-overview}
     The whole PEL algorithm has to be executed each time the view position or lighting changes.
     This is in contrast to other feature lines that may precompute most of their needed information which are only based on surface geometry.
+    \autocite{xie2007,zhang2010}
 
     Concerning time and effort, the main part of the algorithm needs to compute all the illumination derivatives $\nabla φ$, $\mathscr{D}_φ\norm{\nabla φ}$, and $\mathscr{D}^2_φ\norm{\nabla φ}$ for each vertex $v\in V$.
     Afterwards, an iteration over all edges $[v,w]\in E$ detects photic extrema on edges.
-    Finally, an iteration over all faces $f\in F$ connects two feature line vertices of adjacent edges if present generating feature line segments.
+    Finally, an iteration over all faces $f\in F$ connects two feature line vertices of adjacent edges, if present, generating feature line segments.
     At last, the occlusion, threshold $τ\in\setReal_0^+$, and the value of $\norm{\nabla φ}$ for each point decide if the respective photic extremum represented by a fragment will be rendered.
+    \autocite{xie2007,zhang2010}
 
     \begin{tcolorbox}[%
       colframe=black,
@@ -385,9 +394,9 @@
         \item Compute $\mathscr{D}_φ\norm{\nabla φ}$ at each vertex
         \item Compute $\mathscr{D}^2_φ\norm{\nabla φ}$ at each vertex
         \item Detect photic extrema on edges
-        \item Emit feature line segment for each triangle with photic extrema on adjacent edges
-        \item Discard fragments of feature lines \\ based on threshold
-        \item Render non-occluded feature line \\ fragments by using hidden line removal
+        \item Emit PEL segment for each triangle \\ with photic extrema on adjacent edges
+        \item Discard PEL fragments \\ based on threshold test
+        \item Render non-occluded PEL fragments \\ by using hidden line removal
       \end{enumerate}
     \end{tcolorbox}
 
@@ -395,8 +404,10 @@
     In our implementation, points 1 to 4 are taken out on the CPU.
     Point 5 and 6 have been merged and put inside a geometry shader of the graphics pipeline.
     This makes it possible to implement the threshold-based discarding of PEL fragments inside a fragment shader by a simple branch comparing the illumination variation of the fragment to the given threshold.
+    \autocite{zhang2010}
 
   \subsection{Preprocessing}
+  \label{sec:algorithm-preprocessing}
     Besides loading the triangle mesh to be rendered with PELs, we have to generate the interpolated normals for every vertex if they are not already present.
     For this, we refer to the standard procedures given by \textcite{max1999} and \textcite{jin2005}.
     This may already be sufficient for triangle meshes that were created manually by graphic designers.
@@ -405,7 +416,7 @@
     The car has been manually modeled and provides very smooth normals.
     And as a result, it shows a  near-perfect feature line extraction.
 
-    \begin{figure}[h]
+    \begin{figure}[t]
       \centering
       \begin{subfigure}[b]{\linewidth}
         \centering
@@ -431,7 +442,7 @@
     As a consequence, further preprocessing would involve reducing the noise of such normals by using bilateral normal filtering for example as it was done in \textcite{xie2007}.
     Here, we will not provide any details concerning this topic because such filters need parameters that may be tweaked by the user.
 
-    \begin{figure}[h]
+    \begin{figure}[t]
       \centering
       \begin{subfigure}[b]{0.49\linewidth}
         \centering
@@ -452,23 +463,28 @@
       \label{fig:preprocessing-normals-noise}
     \end{figure}
 
-    For the computation of gradients and directional derivatives on the triangle mesh, each vertex should be equipped with an orthonormal system of two vectors spanning its tangent space.
-    Generating such tangent vectors can be quite arbitrary.
-    Our approach first uses a uniform distribution on the unit sphere to randomly generate normalized directions for each vertex.
-    In conjunction with the vertex normal, we can then compute these tangent space vectors by two cross products.
+    % For the computation of gradients and directional derivatives on the triangle mesh, each vertex should be equipped with an orthonormal system of two vectors spanning its tangent space.
+    % Generating such tangent vectors can be quite arbitrary.
+    % Our approach first uses a uniform distribution on the unit sphere to randomly generate normalized directions for each vertex.
+    % In conjunction with the vertex normal, we can then compute these tangent space vectors by two cross products.
 
     \textcite{rusinkiewicz2004}, \textcite{xie2007}, and \textcite{zhang2010} all refer to \textcite{meyer2001} when it comes to the accumulation step of face gradients at their vertices.
-    Hereby, each gradient or directional derivative is weighted based on the Voronoi area of the point inside the current triangle with respect the whole Voronoi area of the vertex.
+    Hereby, each gradient or directional derivative is weighted based on the Voronoi area of the point inside the current triangle with respect to the whole Voronoi area of the given vertex.
     As a consequence, these Voronoi weights should also be precomputed and stored with respect to their vertices and faces.
     % Additionally, neighboring vertices should be stored for parallelization.
 
   \subsection{Gradient Computation}
     As said in section \ref{sec:algorithm-overview}, the main part of the algorithm needs to compute all the illumination derivatives.
-    All of these can be computed with the same approach.
+    Fortunately, all of these can be computed with the same approach given by \textcite{rusinkiewicz2004} and again explained in \textcite{xie2007}.
 
-    For each face, compute the constant gradient by using formula in background.
-    Transform and rotate this gradient into the local vertex system and accumulate multiplied with Voronoi weight.
-    Afterwards iterate over all vertices for normalization.
+    We start with the computation of the illumination gradient $\nabla φ$ at each vertex.
+    The values for $\norm{\nabla φ}$ and $\frac{\nabla φ}{\norm{\nabla φ}}$ can then be deduced by another iteration over all the vertices.
+    So, assume that every vertex starts with a value of zero for this expression.
+    Now, we iterate over every triangle and calculate the constant gradient for the interior of this triangle according to the formulas given as mathematical preliminaries in section \ref{sec:mathematical-preliminaries}.
+    Afterwards, this value has to be accumulated at each vertex of the triangle.
+    The accumulation uses a so-called Voronoi weighting scheme that was first given in \textcite{meyer2001} and was already described in the above section \ref{sec:algorithm-preprocessing}.
+    To make sure that the resulting accumulated gradient at each vertex is consistent in the sense that it belongs to the tangent space, we rotate the gradient from the tangent space of the triangle interior into the tangent space of each vertex before accumulation.
+    The following snippet shows a summary of this explanation.
 
     \begin{tcolorbox}[%
       colframe=black,
@@ -482,22 +498,63 @@
       arc=5pt,
       breakable,
       width=\linewidth,
-      title=Gradient Algorithm
+      title=Gradient Computation
     ]
+      For each triangle $f\in F$:
       \begin{enumerate}
-        \item For each face, compute gradient in $uv$-coordinate representation
-        \item For each adjacent vertex, transform representation into local $uv$-coordinates
-        \item for directional derivatives, compute them at vertices
-        \item Accumulate this representation by using Voronoi weights
+        \item Compute the constant gradient $\nabla φ|_f$
+        \item For each vertex $v\in f$:
+        \begin{enumerate}
+          \item Rotate $\nabla φ|_f$ into tangent space of $v$
+          \item Accumulate rotated $\nabla φ|_f$ at $\nabla φ(v)$ by using Voronoi weighting
+        \end{enumerate}
       \end{enumerate}
     \end{tcolorbox}
+
+    \noindent
+    When computing directional derivatives for the PEL operator, again we first need to evaluate the whole gradient of its argument.
+    Only after that, the scalar product of this gradient with the direction of the illumination gradient at each vertex should be calculated.
+    For this value, we then can use the same accumulation approach.
+
+    \begin{tcolorbox}[%
+      colframe=black,
+      colbacktitle=white,
+      coltitle=black,
+      colback=mathdefback,
+      attach boxed title to top center={yshift=-2mm},
+      enhanced,
+      titlerule=0.1pt,
+      boxrule=0.5pt,
+      arc=5pt,
+      breakable,
+      width=\linewidth,
+      title=PEL Operator Computation
+    ]
+      For each triangle $f\in F$:
+      \begin{enumerate}
+        \item Compute the constant gradient $\nabla φ|_f$
+        \item For each vertex $v\in f$:
+        \begin{enumerate}
+          \item Rotate $\nabla φ|_f$ into tangent space of $v$
+          \item Compute scalar product $p$ of \\ rotated $\nabla φ|_f$ and $\frac{\nabla φ(v)}{\norm{\nabla φ}(v)}$
+          \item Accumulate $p$ at $\nabla φ(v)$ \\ by using Voronoi weighting
+        \end{enumerate}
+      \end{enumerate}
+    \end{tcolorbox}
+
+    \noindent
+    Additionally, because the variation $\norm{\nabla φ}$ of illumination is used for threshold filtering, we need to normalize its values as follows by two more iterations over all vertices.
+    Note that this will not change its derivatives.
+    \[
+      \norm{\nabla φ}(v) \longrightarrow \frac{\norm{\nabla φ}(v)}{\max_{w\in V}\norm{\nabla φ}(w)}
+    \]
 
   \subsection{Line Extraction}
     In section \ref{sec:algorithm-overview}, an overview of the PEL algorithm was given.
     Here, the details for an implementation of points 5 and 6 are provided.
     The subpolygon feature line extraction method is a general method for object-space feature line algorithms described in \textcite{isenberg2003} and \textcite{xie2007}.
     The following snippet summarizes the main points.
-    Hereby, we define the following short notation.
+    Hereby, we define the following short notation for all $x\in S$.
     \[
       h(x)\define\mathscr{D}_φ\norm{\nabla φ}(x)
     \]
@@ -576,16 +633,16 @@
       \begin{subfigure}[b]{0.49\linewidth}
         \centering
         \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-hidden-shader.png}
-        \caption{Off}
+        \caption{One-Pass}
       \end{subfigure}
       \begin{subfigure}[b]{0.49\linewidth}
         \centering
         \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/cyborg-contour-pel-shader.png}
-        \caption{On}
+        \caption{Two-Pass}
       \end{subfigure}
       \caption{%
         \textbf{Two-Pass Rendering for Hidden Line Removal}\\
-        These images show the PELs of the same model.
+        These images show the PELs of the Cyborg model.
         For the left image, a two-pass rendering approach to remove by the object's geometry occluded lines has not been used.
         For the image on the right, first, the whole uncolored surface was rendered to write into the depth buffer and afterwards the feature lines were drawn.
       }
@@ -599,12 +656,47 @@
     In a second rendering pass, the extraction of feature lines will generate fragments with respective depth values.
     The built-in depth test will then discard such fragments that are occluded because their depth values are too high.
 
-    Problems?
-
 % \section{Implementation}
 
 \section{Evaluation and Results}
   Following the definition and implementation of PELs, it is now possible to evaluate their effectiveness with respect to the illustration quality and their performance.
+
+  \subsection{Quality}
+    To test PELs regarding their quality, we refer to the illustrations in figure \ref{fig:quality-results} where several models have been rendered with different shading techniques to make an evaluation of the effectiveness of PELs easier.
+    We see the standard shading based on the illumination function, the objects rendered with Contours and/or PELs, and an additionally applied toon shader to show future application possibilities.
+
+    Contours are very robust when it comes to their extraction.
+    Even for models with a low number of triangles, their generation algorithm creates feature lines which best describe the overall shape of the object with the strongest fore- to background separation without any measurable performance penalty.
+    However, contours suffer from a low amount of details in inner object parts.
+    PELs on the other hand are able to provide rich details in such areas.
+    Compared to hand-drawn illustration, PELs seem to be consistent and natural.
+    The main problem for PELs seems to be to robustly represent the contours of an object because light variation may not be that high at bending surfaces.
+    But it can be seen that combining contours with PELs, in general, we receive superior results concerning the quality of illustrations.
+
+    As an object-space feature line type, PELs enable further post-processing to alter the style of lines or to apply additional shaders, such as toon shading, to the object's surface.
+    Figure \ref{fig:quality-results} applies to the already enabled contours and PELs a simple toon shading approach.
+    Dependent on the application, this may also greatly improve the effectiveness of communicating surface features.
+
+    \begin{figure}[t]
+      \centering
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
+        \caption{Low}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
+        \caption{Mid}
+      \end{subfigure}
+      \caption{%
+        \textbf{PELs for Varying Thresholds}\\
+        The images show the PELs of the fox skull model filtered with different thresholds.
+        For the left image, a threshold near zero has been used.
+        It can be seen that a lot of PELs shown in this image are very short and do not effectively abstract the surface information.
+      }
+      \label{fig:threshold-effect}
+    \end{figure}
 
     \begin{figure*}
       \centering
@@ -671,48 +763,10 @@
         \textbf{Quality Results}\\
         The images show the carburetor, lu yu, dragon head, werewolf, predator, suzanne, and fox skull models with varying shading models.
         The toon shading on the right is always done in conjunction with contours and PELs.
-        Each model provides a user-define custom threshold to filter out unwanted PELs and to maximize quality.
+        Each model provides a user-defined custom threshold to filter out unwanted PELs and to maximize quality.
       }
       \label{fig:quality-results}
     \end{figure*}
-
-
-  \subsection{Quality}
-    To test PELs regarding their quality, we refer to the illustrations in figure \ref{fig:quality-results} where several models have been rendered with different shading techniques to make an evaluation of the effectiveness of PELs easier.
-    We see the standard shading based on the illumination function, the objects rendered with Contours and/or PELs, and additionally applied toon shader to show future application possibilities.
-
-    Contours are very robust when it comes to their extraction.
-    Even for models with a low number of triangles, their generation algorithm creates feature lines which best describe the overall shape of the object with the strongest fore- to background separation without any measurable performance penalty.
-    However, contours suffer from a low amount of details in inner object parts.
-    PELs on the other hand are able to provide rich details in such areas.
-    Compared to hand-drawn illustration, PELs seem to be consistent and natural.
-    The main problem for PELs seems to be to robustly represent the contours of an object because light variation may not be that high at bending surfaces.
-    But it can be seen that combining contours with PELs, in general, we receive superior results concerning the quality of illustrations.
-
-    As an object-space feature line type, PELs enable further post-processing to alter the style of lines or to apply additional shaders, such as toon shading, to the object's surface.
-    Figure \ref{fig:quality-results} applies to the already enabled contours and PELs a simple toon shading approach.
-    Dependent on the application, this may also greatly improve the effectiveness of communicating surface features.
-
-    \begin{figure}[t]
-      \centering
-      \begin{subfigure}[b]{0.49\linewidth}
-        \centering
-        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-low.png}
-        \caption{Low}
-      \end{subfigure}
-      \begin{subfigure}[b]{0.49\linewidth}
-        \centering
-        \includegraphics[width=\textwidth,trim={15px 15 15 50},clip]{images/fox-skull-threshold-mid.png}
-        \caption{Mid}
-      \end{subfigure}
-      \caption{%
-        \textbf{PELs for Varying Thresholds}\\
-        The images show the PELs of the fox skull model filtered with different thresholds.
-        For the left image, a threshold near zero has been used.
-        It can be seen that a lot of PELs shown in this image are very short and do not effectively abstract the surface information.
-      }
-      \label{fig:threshold-effect}
-    \end{figure}
 
     Taking a look at the use of user-defined thresholds for filtering unwanted PELs, figure \ref{fig:threshold-effect} shows an example.
     A near-zero threshold will likely extract PELs that are very short and do not carry essential information about the surface geometry.
@@ -773,7 +827,7 @@
   Hereby, our knowledge of human perception has been applied to provide an object-space algorithm that is able to generate more natural renderings of lines.
   We were able to see that PELs strongly coincide with hand-drawn illustrations.
   By definition, PELs are therefore more general than other feature line types.
-  Changing the lighting model allows to remove unwanted details or amplify parts which would otherwise be unseen.
+  According to \textcite{xie2007} and \textcite{zhang2010}, changing the lighting model allows to remove unwanted details or amplify parts which would otherwise be unseen.
   Furthermore, applying further techniques, such as contours and toon shading, greatly improves the resulting illustration.
 
   To extract PELs from a given scene, we have to evaluate up to third-order derivatives of a given scalar illumination function for each animation frame.
@@ -782,7 +836,7 @@
   Apart from that, all typical feature line algorithms for hidden line removal or line extraction can be used.
 
   We have implemented PELs in C++ with an OpenGL pipeline, using a hybrid approach utilizing CPU and GPU at the same time for simplicity.
-  The shown implementation achieves interactive up to real-time frame rates even for millions of triangles.
+  The described implementation achieves interactive up to real-time frame rates even for millions of triangles.
   Due to synchronization issues, computations of gradients and directional derivatives are done on the CPU in a straightforward serial algorithm.
   The rendering step is done in a two-pass approach to remove hidden lines.
   For the line extraction, we have used a geometry shader written in GLSL that outputs subpolygon feature line segments in a triangle.
@@ -799,11 +853,16 @@
   But instead of textures, a more modern approach based on compute shaders that take advantage of shader storage buffers to access information of neighboring vertices could be used.
   A pure GPU implementation is likely to be faster and also more flexible and easier to integrate with other techniques.
 
+  \newpage
+
   Trying to improve the quality of generated illustrations, \citeauthor{zhang2010} used mean-curvature lighting \autocite{kindlmann2003,kolomenkin2008} instead of a simplified Phong model to make line extraction more robust.
   According to this, also other lighting techniques, such as exaggerated shading \autocite{rusinkiewicz2006}, seem to be promising alternatives for a robust automatic lighting model.
 
+  In our opinion, PELs are a powerful tool in illustrative visualization to convey the shape of objects by using feature lines.
+  Together with contours, they only lack a robust and adaptive approach for its lighting model, normal filtering, and threshold determination.
+
 \nocite{*}
-\AtNextBibliography{\footnotesize}
+\AtNextBibliography{\small}
 \printbibliography[heading=bibintoc]
 
 \appendix
