@@ -356,6 +356,7 @@
   Let $S\define V\cup E\cup F$ be the surface of $\mathscr{M}$ and $\function{φ}{S}{\setReal}$ a scalar triangle mesh function representing the grayscale illumination of $\mathscr{M}$ with given values at each vertex which uses linear interpolation based on barycentric coordinates for edges and faces.
 
   \subsection{Overview}
+  \label{sec:algorithm-overview}
     The whole PEL algorithm has to be executed each time the view position or lighting changes.
     This is in contrast to other feature lines that may precompute most of their needed information which are only based on surface geometry.
 
@@ -462,6 +463,9 @@
     % Additionally, neighboring vertices should be stored for parallelization.
 
   \subsection{Gradient Computation}
+    As said in section \ref{sec:algorithm-overview}, the main part of the algorithm needs to compute all the illumination derivatives.
+    All of these can be computed with the same approach.
+
     For each face, compute the constant gradient by using formula in background.
     Transform and rotate this gradient into the local vertex system and accumulate multiplied with Voronoi weight.
     Afterwards iterate over all vertices for normalization.
@@ -488,7 +492,7 @@
       \end{enumerate}
     \end{tcolorbox}
 
-  \subsection{Line Tracing}
+  \subsection{Line Extraction}
 
     \begin{figure}[h]
       \centering
